@@ -98,6 +98,7 @@ find_best_fit <- function(target_dollars, gsr_level, is_july_ta = FALSE, is_augu
             df <- tibble::tibble(
                 percent            = double(0),
                 month              = character(0),
+                max_days           = integer(0),
                 days               = integer(0),
                 salary             = double(0),
                 fringe             = double(0),
@@ -134,6 +135,7 @@ find_best_fit <- function(target_dollars, gsr_level, is_july_ta = FALSE, is_augu
                                 tibble::tibble(
                                     percent            = sprintf("%s%% Effort - Scenario %s", 100*appt_perc, sidx),
                                     month              = month,
+                                    max_days           = limit$max_days,
                                     days               = work_days,
                                     salary             = round(work_dollars, 2),
                                     fringe             = round(work_dollars * 0.02, 2),
@@ -185,6 +187,7 @@ blank_row <- function(percent) {
     tibble::tibble(
         percent            = percent,
         month              = ":",
+        max_days           = as.integer(NA),
         days               = as.integer(NA),
         salary             = as.double(NA),
         fringe             = as.double(NA),
@@ -203,6 +206,7 @@ print_df_list <- function(dfs) {
             tibble::tibble(
                 percent            = tdf$percent[[1]],
                 month              = NA_character_,
+                max_days           = NA_character_,
                 days               = sum(tdf$days, na.rm = TRUE),
                 salary             = round(sum(tdf$salary, na.rm = TRUE), 2),
                 fringe             = round(sum(tdf$fringe, na.rm = TRUE), 2),
@@ -221,9 +225,10 @@ print_df_list <- function(dfs) {
         }
     }
     gt::gt(df, groupname_col = "percent") |>
-        gt::tab_header(title = "Best Fit GSR Appointments", subtitle = "(Descending sorted by highest salary payout)") |>
+        gt::tab_header(title = "Best Fit GSR Appointments", subtitle = "(descending sorted by highest salary payout)") |>
         gt::cols_label(
             month              = gt::html("<b>Month</b>"),
+            max_days           = gt::html("<b>Max<br>Days</b>"),
             days               = gt::html("<b>Work<br>Days</b>"),
             salary             = gt::html("<b>Salary</b>"),
             fringe             = gt::html("<b>Fringe<br>Benefits</b>"),
@@ -237,6 +242,7 @@ print_df_list <- function(dfs) {
         gt::tab_style(style = gt::cell_fill(color = "#00FF00", alpha = .35), locations = gt::cells_body(columns = salary, rows = is.na(month) & salary == max(df$salary, na.rm = TRUE))) |>
         gt::tab_style(style = gt::cell_text(weight = "bold"), locations = gt::cells_body(columns = salary, rows = is.na(month))) |>
         gt::tab_style(style = gt::cell_fill(color = "#AAAAAA", alpha = .35), locations = gt::cells_body(columns = salary, rows = salary != max(df$salary, na.rm = TRUE) & is.na(month))) |>
+        gt::tab_style(style = gt::cell_text(color = "#BBBBBB"), locations = gt::cells_body(columns = max_days)) |>
         gt::tab_style(style = gt::cell_borders(sides = c("top"), color = "#AAAAAA", weight = gt::px(2)), locations = gt::cells_body(rows = is.na(month))) |>
         gt::tab_style(style = gt::cell_text(size = "20px", color = "#FFFFFF"), locations = gt::cells_body(columns = month, rows = month == ":")) |>
         gt::tab_style(style = gt::cell_borders(sides = c("left", "right"), color = "#CCCCCC"), locations = gt::cells_body(rows = !is.na(days)))
