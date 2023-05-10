@@ -83,7 +83,10 @@ find_best_fit <- function(target_dollars, gsr_level, is_july_ta = FALSE, is_augu
 
     for (appt_perc in appointment_percents) {
         monthly_pay_at_appt_level <- gsr_level$monthly * appt_perc
-        full_months_of_pay <- floor(target_dollars/monthly_pay_at_appt_level)
+        # If target dollars is greater than 3 * monthly_pay_at_appt_level, then set target dollars to 3 * monthly_pay_at_appt_level (minus 1 dollar so not even 3 months)
+        appt_scenario_dollars <- min(target_dollars, ((3*monthly_pay_at_appt_level) - 1))
+
+        full_months_of_pay <- floor(appt_scenario_dollars/monthly_pay_at_appt_level)
         if (full_months_of_pay == 0) {
             scenarios <- list(
                 c("July"),
@@ -123,7 +126,7 @@ find_best_fit <- function(target_dollars, gsr_level, is_july_ta = FALSE, is_augu
                 salary_fringe      = double(0),
                 salary_fringe_gael = double(0)
             )
-            scenario_dollars <- target_dollars
+            scenario_dollars <- appt_scenario_dollars
             index_bumped <- FALSE
             for (month in scenario) {
                 if (month == "July" && is_july_ta && appt_perc > 0.50) {
@@ -242,6 +245,15 @@ find_best_fit_test <- function() {
     res <- find_best_fit(
         target_dollars = 6000,
         gsr_level      = gsr_levels$V,
+        is_july_ta     = FALSE,
+        is_august_ta   = FALSE
+    )
+    print_df_list(res)
+
+    debugonce(find_best_fit)
+    res <- find_best_fit(
+        target_dollars = 17000,
+        gsr_level      = gsr_levels$I,
         is_july_ta     = FALSE,
         is_august_ta   = FALSE
     )
