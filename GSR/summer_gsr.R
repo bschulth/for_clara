@@ -1,6 +1,16 @@
 #!/usr/local/bin/Rscript --vanilla
 
 suppressMessages({
+    tryCatch({
+        personal_lib <- Sys.getenv("R_LIBS_USER")
+        if (length(personal_lib) > 0 && nchar(personal_lib) > 0) {
+            if (!dir.exists(personal_lib)) {
+                dir.create(path = personal_lib, recursive = TRUE)
+            }
+        }
+    }, error = function(e){
+        message("Erroring trying to create personal library path. Reason: ", e$message)
+    })
     if (!require("gt")) {
         utils::install.packages("gt", repos = "https://cran.rstudio.com/")
     }
@@ -282,6 +292,8 @@ print_df_list <- function(dfs) {
         ) |>
         gt::sub_missing(missing_text = "") |>
         gt::tab_options(row_group.font.weight = "bold") |>
+        #gt::tab_style(style = gt::cell_text(color = "#005500"), locations = gt::cells_body(columns = gt::everything(), rows = !is.na(max_days) & max_days == days)) |>
+        gt::tab_style(style = gt::cell_text(color = "#000055", style = "italic"), locations = gt::cells_body(columns = gt::everything(), rows = !is.na(max_days) & max_days != days)) |>
         gt::tab_style(style = gt::cell_fill(alpha = 0.35), locations = gt::cells_row_groups()) |>
         gt::tab_style(style = gt::cell_fill(color = "#00FF00", alpha = .35), locations = gt::cells_body(columns = salary, rows = is.na(month) & salary == max(df$salary, na.rm = TRUE))) |>
         gt::tab_style(style = gt::cell_text(weight = "bold"), locations = gt::cells_body(columns = salary, rows = is.na(month))) |>
