@@ -247,7 +247,8 @@ print_df_list <- function(dfs) {
         gt::tab_style(style = gt::cell_text(color = "#BBBBBB"), locations = gt::cells_body(columns = max_days)) |>
         gt::tab_style(style = gt::cell_borders(sides = c("top"), color = "#AAAAAA", weight = gt::px(2)), locations = gt::cells_body(rows = is.na(month))) |>
         gt::tab_style(style = gt::cell_text(size = "20px", color = "#FFFFFF"), locations = gt::cells_body(columns = month, rows = month == ":")) |>
-        gt::tab_style(style = gt::cell_borders(sides = c("left", "right"), color = "#CCCCCC"), locations = gt::cells_body(rows = !is.na(days)))
+        gt::tab_style(style = gt::cell_borders(sides = c("left", "right"), color = "#CCCCCC"), locations = gt::cells_body(rows = !is.na(days))) |>
+        gt::fmt_currency(columns = gt::one_of(c("salary","fringe", "gael", "salary_fringe","salary_fringe_gael")))
 }
 
 
