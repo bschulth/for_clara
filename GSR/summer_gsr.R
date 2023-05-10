@@ -102,6 +102,7 @@ find_best_fit <- function(target_dollars, gsr_level, is_july_ta = FALSE, is_augu
                 month              = character(0),
                 max_days           = integer(0),
                 days               = integer(0),
+                effort             = character(0),
                 salary             = double(0),
                 fringe             = double(0),
                 gael               = double(0),
@@ -139,6 +140,7 @@ find_best_fit <- function(target_dollars, gsr_level, is_july_ta = FALSE, is_augu
                                     month              = month,
                                     max_days           = limit$max_days,
                                     days               = work_days,
+                                    effort             = sprintf("%s%%", (100*appt_perc)),
                                     salary             = round(work_dollars, 2),
                                     fringe             = round(work_dollars * 0.02, 2),
                                     gael               = round(work_dollars * 0.009, 2),
@@ -163,29 +165,31 @@ find_best_fit <- function(target_dollars, gsr_level, is_july_ta = FALSE, is_augu
             }
         }
     }
-    dfs <- sort_and_rename_scenarios(dfs)
+    dfs <- sort_and_rename_scenarios(dfs, target_dollars = target_dollars)
 
 
     return(dfs)
 }
 
-sort_and_rename_scenarios <- function(dfs) {
+dollar_format <- function(x) {
+    return(formatC(as.numeric(x), format="f", digits=2, big.mark=","))
+}
+
+sort_and_rename_scenarios <- function(dfs, target_dollars) {
     # Sort by higest salary (descending)
     dfs <- dfs[rev(sort(names(dfs)))]
 
     # Rename the scenarios
-    scenarios <- list()
+    sc_idx <- 0
     for(sn in names(dfs)) {
         df <- dfs[[sn]]
         current_scenario_name <- df$percent[[1]]
         pct <- gsub("^(\\d+)%.*", "\\1", current_scenario_name)
-        key <- as.character(pct)
-        if (is.null(scenarios[[key]])) {
-            scenarios[[key]] <- 0
-        }
-        scenarios[[key]] <- scenarios[[key]] + 1
-        scenario_idx <- scenarios[[key]]
-        new_scenario_name <- sprintf("%s %% Effort - Scenario %s", pct, scenario_idx)
+        sc_idx <- sc_idx + 1
+        total_salary <- sum(df$salary, na.rm = TRUE)
+        dollars_left <- round(target_dollars - total_salary, 2)
+        # new_scenario_name <- sprintf("Scenario (%s / %s) ::  %s%% Effort :: Total Salary Paid: $%s ($%s Left Over)", sc_idx, length(dfs), pct, dollar_format(total_salary), dollar_format(dollars_left))
+        new_scenario_name <- sprintf("Scenario (%s / %s) ::  %s%% Effort :: ($%s Left Over)", sc_idx, length(dfs), pct, dollar_format(dollars_left))
         df$percent <- new_scenario_name
         dfs[[sn]] <- df
     }
@@ -226,6 +230,7 @@ blank_row <- function(percent) {
         month              = ":",
         max_days           = as.integer(NA),
         days               = as.integer(NA),
+        effort             = as.double(NA),
         salary             = as.double(NA),
         fringe             = as.double(NA),
         gael               = as.double(NA),
@@ -245,6 +250,7 @@ print_df_list <- function(dfs) {
                 month              = NA_character_,
                 max_days           = NA_character_,
                 days               = sum(tdf$days, na.rm = TRUE),
+                effort             = tdf$effort[[1]],
                 salary             = round(sum(tdf$salary, na.rm = TRUE), 2),
                 fringe             = round(sum(tdf$fringe, na.rm = TRUE), 2),
                 gael               = round(sum(tdf$gael, na.rm = TRUE), 2),
@@ -267,6 +273,7 @@ print_df_list <- function(dfs) {
             month              = gt::html("<b>Month</b>"),
             max_days           = gt::html("<b>Max<br>Days</b>"),
             days               = gt::html("<b>Work<br>Days</b>"),
+            effort             = gt::html("<b>Effort</b>"),
             salary             = gt::html("<b>Salary</b>"),
             fringe             = gt::html("<b>Fringe<br>Benefits</b>"),
             gael               = gt::html("<b>GAEL</b>"),
