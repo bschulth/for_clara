@@ -245,41 +245,44 @@ print_df_list <- function(dfs) {
 
 ui <- shiny::absolutePanel(
     top = 0, left = 0, right = 0, bottom = 0,
-    style = "padding: 10px;",
+    style = "padding: 20px; margin: 5px;",
     shinyjs::useShinyjs(),
     shiny::tags$style("
         body {
             font-family: Calibri,Arial;
         }
         input#target_salary {
-            width: 85px;
+            width: 100px;
             height: 20px;
         }
         select#gsr_level {
-            width: 75px;
+            width: 87px;
             height: 25px;
         }
         input#gsr_salary {
-            width: 85px;
+            width: 115px;
             height: 20px;
+        }
+        table.gt_table {
+            margin-left: 45px!important;
         }
     "),
     shiny::tags$table(
         shiny::tags$tr(
             shiny::tags$td(
-                style= "width:100px; max-width: 100px",
+                style= "width:125px; max-width: 125px; font-weight:bold; margin-bottom: 5px;",
                 shiny::tags$label("Target Salary:")
             ),
             shiny::tags$td(
-                style= "width:85px; max-width: 85px",
+                style= "width:100px; max-width: 100px; font-weight:bold; margin-bottom: 5px;",
                 shiny::tags$label("GSR Level:")
             ),
             shiny::tags$td(
-                style= "width:120px; max-width: 120px",
+                style= "width:135px; max-width: 135px; font-weight:bold; margin-bottom: 5px;",
                 shiny::tags$label("Monthly Salary:")
             ),
             shiny::tags$td(
-                style= "width:400px; max-width: 400px",
+                style= "width:400px; max-width: 400px; font-weight:bold; margin-bottom: 5px;",
                 shiny::tags$label("TA Appointment:")
             )
         ),
@@ -304,6 +307,7 @@ ui <- shiny::absolutePanel(
         ),
         shiny::tags$tr(
             shiny::tags$td(
+                style = "padding-top: 10px;",
                 colspan = 4,
                 gt::gt_output(outputId = "scenarios")
 
