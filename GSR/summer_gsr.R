@@ -1,3 +1,5 @@
+#!/usr/local/bin/Rscript --vanilla
+
 suppressMessages({
     if (!require("gt")) {
         utils::install.packages("gt", repos = "https://cran.rstudio.com/")
