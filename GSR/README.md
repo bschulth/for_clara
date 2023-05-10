@@ -15,6 +15,9 @@
 
 ## Run From Command Line
 - Unix
+   - Make sure `R` is installed (tested on R-4.3.0):
+      - https://cran.r-project.org/bin/linux/
+   
    - ```sh
      # chmod 700 summer_gsr.R
      ./summer_gsr.R
@@ -24,6 +27,9 @@
      ```
      
 - Windows
+   - Make sure `R` is installed (tested on R-4.3.0):
+      - https://cran.r-project.org/bin/windows/base/R-4.3.0-win.exe
+      
    - ```sh
          # If R is on path:
          Rscript summer_gsr.R
