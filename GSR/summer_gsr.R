@@ -156,12 +156,39 @@ find_best_fit <- function(target_dollars, gsr_level, is_july_ta = FALSE, is_augu
                 df <- df[, !(names(df) %in% "order")]
 
                 idx <- idx + 1
-                key <- sprintf("%09i :: %s", round(sum(df$salary), 0), idx)
+
+                pct <- as.integer(gsub("^(\\d+)%.*", "\\1", df$percent[[1]]))
+                key <- sprintf("%09i :: %03i :: %05i", round(sum(df$salary), 0), pct, idx)
                 dfs[[key]] <- df
             }
         }
     }
+    dfs <- sort_and_rename_scenarios(dfs)
+
+
+    return(dfs)
+}
+
+sort_and_rename_scenarios <- function(dfs) {
+    # Sort by higest salary (descending)
     dfs <- dfs[rev(sort(names(dfs)))]
+
+    # Rename the scenarios
+    scenarios <- list()
+    for(sn in names(dfs)) {
+        df <- dfs[[sn]]
+        current_scenario_name <- df$percent[[1]]
+        pct <- gsub("^(\\d+)%.*", "\\1", current_scenario_name)
+        key <- as.character(pct)
+        if (is.null(scenarios[[key]])) {
+            scenarios[[key]] <- 0
+        }
+        scenarios[[key]] <- scenarios[[key]] + 1
+        scenario_idx <- scenarios[[key]]
+        new_scenario_name <- sprintf("%s %% Effort - Scenario %s", pct, scenario_idx)
+        df$percent <- new_scenario_name
+        dfs[[sn]] <- df
+    }
 
     return(dfs)
 }
@@ -178,6 +205,14 @@ find_best_fit_test <- function() {
     res <- find_best_fit(
         target_dollars = 5300,
         gsr_level      = gsr_levels$I,
+        is_july_ta     = FALSE,
+        is_august_ta   = FALSE
+    )
+    print_df_list(res)
+
+    res <- find_best_fit(
+        target_dollars = 6000,
+        gsr_level      = gsr_levels$V,
         is_july_ta     = FALSE,
         is_august_ta   = FALSE
     )
