@@ -9,7 +9,7 @@ suppressMessages({
             }
         }
     }, error = function(e){
-        message("Erroring trying to create personal library path. Reason: ", e$message)
+        message("Error trying to create personal library path. Reason: ", e$message)
     })
     if (!require("gt")) {
         utils::install.packages("gt", repos = "https://cran.rstudio.com/")
