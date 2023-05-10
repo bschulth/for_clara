@@ -234,7 +234,7 @@ print_df_list <- function(dfs) {
         gt::sub_missing(missing_text = "") |>
         gt::tab_options(row_group.font.weight = "bold") |>
         gt::tab_style(style = gt::cell_fill(alpha = 0.35), locations = gt::cells_row_groups()) |>
-        gt::tab_style(style = gt::cell_fill(color = "#00FF00", alpha = .35), locations = gt::cells_body(columns = salary, rows = salary == max(df$salary, na.rm = TRUE))) |>
+        gt::tab_style(style = gt::cell_fill(color = "#00FF00", alpha = .35), locations = gt::cells_body(columns = salary, rows = is.na(month) & salary == max(df$salary, na.rm = TRUE))) |>
         gt::tab_style(style = gt::cell_text(weight = "bold"), locations = gt::cells_body(columns = salary, rows = is.na(month))) |>
         gt::tab_style(style = gt::cell_fill(color = "#AAAAAA", alpha = .35), locations = gt::cells_body(columns = salary, rows = salary != max(df$salary, na.rm = TRUE) & is.na(month))) |>
         gt::tab_style(style = gt::cell_borders(sides = c("top"), color = "#AAAAAA", weight = gt::px(2)), locations = gt::cells_body(rows = is.na(month))) |>
