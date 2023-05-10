@@ -5,13 +5,16 @@
 ## Download
 - Unix
    - ```sh
-         wget https://raw.githubusercontent.com/bschulth/for_clara/main/GSR/summer_gsr.R
+         wget -O summer_gsr.R https://raw.githubusercontent.com/bschulth/for_clara/main/GSR/summer_gsr.R
      ```
     
 - Windows
    - Navigate to https://github.com/bschulth/for_clara/blob/main/GSR/summer_gsr.R
-   - Click the `download` icon
+   - Click the `download` icon (only visible if you have a GitHub user account I think)
       - ![](./img/git_download.png)
+   - Otherwise, just open https://raw.githubusercontent.com/bschulth/for_clara/main/GSR/summer_gsr.R
+      - Then copy the text, and paste it into a new file `summer_gsr.R`
+      
 
 ## Run From Command Line
 - Unix
@@ -32,7 +35,7 @@
       
    - ```sh
          # If R is on path:
-         Rscript summer_gsr.R
+         Rscript --vanilla summer_gsr.R
          
          # If R is not on path, then maybe something like:
          %LOCALAPPDATA%\Programs\R\R-4.3.0\bin\x64\Rscript --vanilla summer_gsr.R
