@@ -79,6 +79,8 @@ limits <- list(
 find_best_fit <- function(target_dollars, gsr_level, is_july_ta = FALSE, is_august_ta = FALSE) {
     dfs <- list()
     idx <- 0
+    scenario_keys <- c()
+
     for (appt_perc in appointment_percents) {
         monthly_pay_at_appt_level <- gsr_level$monthly * appt_perc
         full_months_of_pay <- floor(target_dollars/monthly_pay_at_appt_level)
@@ -92,14 +94,16 @@ find_best_fit <- function(target_dollars, gsr_level, is_july_ta = FALSE, is_augu
             )
         } else if (full_months_of_pay == 1) {
             scenarios <- list(
-                c("July", "August", "September1", "September2", "June"),
-                c("August", "July", "September1", "September2", "June"),
-                c("August", "September1", "September2", "June"),
-                c("July", "September1", "September2", "June")
+                c("July", "August", "September1", "September2"),
+                c("July", "August", "June", "September1", "September2"),
+                c("July", "June", "August", "September1", "September2"),
+                c("August", "July", "September1", "September2"),
+                c("August", "September1", "September2")
             )
         } else if (full_months_of_pay == 2) {
             scenarios <- list(
-                c("July", "August", "September1", "September2", "June")
+                c("July", "August", "September1", "September2", "June"),
+                c("July", "August", "June", "September1", "September2")
             )
         } else if (full_months_of_pay > 2) {
             scenarios <- list()
@@ -167,11 +171,22 @@ find_best_fit <- function(target_dollars, gsr_level, is_july_ta = FALSE, is_augu
                 df <- df[order(df$order),]
                 df <- df[, !(names(df) %in% "order")]
 
-                idx <- idx + 1
+                scenario_key <- paste0(c(
+                    as.character((100*appt_perc)),
+                    paste0(df$month, collapse = "::"),
+                    paste0(df$days, collapse = "::"),
+                    paste0(df$salary, collapse = "::")
+                ), collapse = "|")
 
-                pct <- as.integer(gsub("^(\\d+)%.*", "\\1", df$percent[[1]]))
-                key <- sprintf("%09i :: %03i :: %05i", round(sum(df$salary), 0), pct, idx)
-                dfs[[key]] <- df
+                if (!(scenario_key %in% scenario_keys)) {
+                    # This is a unique scenario
+                    scenario_keys <- c(scenario_keys, scenario_key)
+                    idx <- idx + 1
+
+                    pct <- as.integer(gsub("^(\\d+)%.*", "\\1", df$percent[[1]]))
+                    key <- sprintf("%09i :: %03i :: %05i", round(sum(df$salary), 0), pct, idx)
+                    dfs[[key]] <- df
+                }
             }
         }
     }
@@ -329,6 +344,50 @@ ui <- shiny::absolutePanel(
         table.gt_table {
             margin-left: 45px!important;
         }
+
+        /*Shiny notify*/
+        div.shiny-notification {
+            border-radius: 10px;
+            font-family: Arial;
+            box-shadow: 0px 7px 20px 0px #2f2e2e;
+            border-color: #444;
+            opacity: 1;
+            background-color: #DDDDDD;
+            position: relative;
+            left: undefined;
+            right: undefined;
+            bottom: undefined;
+            top: 35%;
+            margin: auto auto auto auto;
+            width: 250px;
+            height: auto;
+            color: black;
+        }
+        #shiny-notification-panel {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            bottom: 0;
+            right: 0;
+            background-color: #646464a6;
+            border: none;
+            padding: 0px;
+            z-index: 99999;
+            color: black;
+        }
+
+        .progress.active {
+            border: 1px solid #555555;
+            margin-right: 20px;
+            height: 8px;
+            color: black;
+        }
+        .progress-bar {
+            background-color: blue;
+            height: 8px;
+            color: black;
+        }
+
     "),
     shiny::tags$table(
         shiny::tags$tr(
