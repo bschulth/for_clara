@@ -1,4 +1,4 @@
-# Summer GSR Calculation
+# Summer GSR Scenarios
 
 - Helper app to calculate plausible summer GSR appointments
 
